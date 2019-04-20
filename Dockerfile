@@ -19,5 +19,5 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
  && apt-get -y remove unzip \
  && apt clean && rm -rf /var/lib/apt/lists/* \
  && go build -o /main /main.go
-CMD /main 80
+CMD /main
 

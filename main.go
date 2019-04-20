@@ -96,7 +96,7 @@ func BindSlackData(_ http.ResponseWriter, r *http.Request) {
 func main() {
 	log.Println("server startup......")
 	http.HandleFunc("/v1/slack/inbound", BindSlackData)
-	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	http.ListenAndServe(":80", nil)
 }
 
 func epay() string {
