@@ -104,13 +104,23 @@ func epay() string {
 
 	driver := agouti.ChromeDriver(agouti.ChromeOptions("args", []string{
 		"--headless",
-		"--no-sandbox",
 		"--disable-gpu",
 		"--disable-extensions",
 		"--disable-print-preview",
 		"--ignore-certificate-error",
-		"--window-size=640,480",
+		"--window-size=1920,1080",
 	}), agouti.Debug)
+	/*
+		driver := agouti.ChromeDriver(agouti.ChromeOptions("args", []string{
+			"--headless",
+			"--no-sandbox",
+			"--disable-gpu",
+			"--disable-extensions",
+			"--disable-print-preview",
+			"--ignore-certificate-error",
+			"--window-size=640,480",
+		}), agouti.Debug)
+	*/
 
 	err := driver.Start()
 	if err != nil {
