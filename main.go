@@ -105,9 +105,8 @@ func epay() string {
 		"--headless",
 		"--no-sandbox",
 		"--disable-gpu",
-		"--disable-extensions",
-		"--disable-print-preview",
-		"--window-size=1920,1080",
+		"--window-size=1280,1024",
+		"--disable-dev-shm-usage",
 	}), agouti.Debug)
 
 	err := driver.Start()
@@ -131,22 +130,50 @@ func epay() string {
 		return err.Error()
 	}
 
-	err = page.Find("input[name=\"copCd\"]").Fill(os.Getenv("ePayWorkCopCd"))
+	time.Sleep(10 * time.Second)
+
+	ePayWorkCopCd := os.Getenv("ePayWorkCopCd")
+	ePayWorkEmpCd := os.Getenv("ePayWorkEmpCd")
+	ePayWorkPassword := os.Getenv("ePayWorkPassword")
+
+	log.Println(ePayWorkCopCd)
+	log.Println(ePayWorkEmpCd)
+	log.Println(ePayWorkPassword)
+
+	err = page.Find("input[name=\"copCd\"]").Fill(ePayWorkCopCd)
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
 	}
 
-	err = page.Find("input[name=\"empCd\"]").Fill(os.Getenv("ePayWorkEmpCd"))
+	err = page.Find("input[name=\"empCd\"]").Fill(ePayWorkEmpCd)
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
 	}
 
-	err = page.Find("input[name=\"password\"]").Fill(os.Getenv("ePayWorkPassword"))
+	err = page.Find("input[name=\"password\"]").Fill(ePayWorkPassword)
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
@@ -154,31 +181,75 @@ func epay() string {
 
 	err = page.Find("button[type=\"submit\"]").Click()
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
 	}
 
+	time.Sleep(10 * time.Second)
+
 	err = page.Navigate("https://prb01.payroll.co.jp/epayc/mainPersonal.do?op=doSso&fwdSyscd=work&concd=calendar")
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
+	}
+
+	time.Sleep(10 * time.Second)
+
+	err = page.NextWindow()
+	if err != nil {
+		panic(err)
 	}
 
 	now := time.Now()
 
 	fromValue, err := page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Attribute("value")
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
 	}
 
 	mmss := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
+	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
+		driver.Stop()
+		log.Println(err)
+		return err.Error()
+	}
 	if fromValue == "" {
 		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Fill(mmss)
 		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
 			driver.Stop()
 			log.Println(err)
 			return err.Error()
@@ -187,6 +258,12 @@ func epay() string {
 	} else {
 		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(1).Fill(mmss)
 		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
 			driver.Stop()
 			log.Println(err)
 			return err.Error()
@@ -196,6 +273,12 @@ func epay() string {
 
 	err = page.Find("#contentsRight > div.wrapperCenter.mt10 > a.buttonLBright.lastchild").Click()
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
@@ -204,6 +287,12 @@ func epay() string {
 	err = page.Find("#navigation > ul > li.lastchild").Click()
 
 	if err != nil {
+		html, err2 := page.HTML()
+		if err2 != nil {
+			log.Println(err2)
+		} else {
+			log.Println(html)
+		}
 		driver.Stop()
 		log.Println(err)
 		return err.Error()
