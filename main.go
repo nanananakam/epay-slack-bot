@@ -209,11 +209,6 @@ func epay() string {
 
 	page.Session().SetImplicitWait(10000)
 
-	err = page.NextWindow()
-	if err != nil {
-		panic(err)
-	}
-
 	now := time.Now()
 
 	fromValue, err := page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Attribute("value")
