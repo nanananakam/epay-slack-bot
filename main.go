@@ -101,26 +101,14 @@ func main() {
 
 func epay() string {
 	var result string
-
 	driver := agouti.ChromeDriver(agouti.ChromeOptions("args", []string{
 		"--headless",
+		"--no-sandbox",
 		"--disable-gpu",
 		"--disable-extensions",
 		"--disable-print-preview",
-		"--ignore-certificate-error",
 		"--window-size=1920,1080",
 	}), agouti.Debug)
-	/*
-		driver := agouti.ChromeDriver(agouti.ChromeOptions("args", []string{
-			"--headless",
-			"--no-sandbox",
-			"--disable-gpu",
-			"--disable-extensions",
-			"--disable-print-preview",
-			"--ignore-certificate-error",
-			"--window-size=640,480",
-		}), agouti.Debug)
-	*/
 
 	err := driver.Start()
 	if err != nil {
@@ -171,7 +159,7 @@ func epay() string {
 		return err.Error()
 	}
 
-	err = page.Navigate("https://prb01.payroll.co.jp/epayc/mainPersonal.do?op=doSso&fwdSyscd=work&concd=calendar")
+	err = page.Navigate("https://prb01.payroll.co.jp/epayc/Welcome.do")
 	if err != nil {
 		driver.Stop()
 		log.Println(err)
