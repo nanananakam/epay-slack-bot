@@ -192,7 +192,7 @@ func epay() string {
 		return err.Error()
 	}
 
-	time.Sleep(10 * time.Second)
+	page.Session().SetImplicitWait(10000)
 
 	err = page.Navigate("https://prb01.payroll.co.jp/epayc/mainPersonal.do?op=doSso&fwdSyscd=work&concd=calendar")
 	if err != nil {
@@ -207,7 +207,7 @@ func epay() string {
 		return err.Error()
 	}
 
-	time.Sleep(10 * time.Second)
+	page.Session().SetImplicitWait(10000)
 
 	err = page.NextWindow()
 	if err != nil {
