@@ -159,7 +159,7 @@ func epay() string {
 		return err.Error()
 	}
 
-	err = page.Navigate("https://prb01.payroll.co.jp/epayc/Welcome.do")
+	err = page.Navigate("https://prb01.payroll.co.jp/epayc/mainPersonal.do?op=doSso&fwdSyscd=work&concd=calendar")
 	if err != nil {
 		driver.Stop()
 		log.Println(err)
