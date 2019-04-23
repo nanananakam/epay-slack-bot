@@ -10,3 +10,4 @@ herokuにデプロイする仕様
 - ePayWorkCopCd : 企業コード
 - ePayWorkEmpCd ：従業員コード
 - ePayWorkPassword : パスワード
+- token : Outgoing Webhokのtoken

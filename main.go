@@ -64,7 +64,7 @@ type SlackHookMesage struct {
 	TriggerWord string `json:"trigger_word"`
 }
 
-func BindSlackData(_ http.ResponseWriter, r *http.Request) {
+func BindSlackData(w http.ResponseWriter, r *http.Request) {
 	var postData SlackHookMesage
 	postData.Token = r.FormValue("token")
 	postData.TeamId = r.FormValue("team_id")
@@ -77,6 +77,11 @@ func BindSlackData(_ http.ResponseWriter, r *http.Request) {
 	postData.TriggerWord = r.FormValue("trigger_word")
 
 	log.Println(postData)
+	if postData.Token != os.Getenv("token") {
+		log.Println("Invalid token : " + postData.Token)
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
 	log.Println("text: " + postData.Text)
 	cfg, err := ReadConfig()
@@ -91,6 +96,8 @@ func BindSlackData(_ http.ResponseWriter, r *http.Request) {
 	} else {
 		SlackPost(cfg, "@"+postData.UserName+" お前は誰だ")
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func main() {
