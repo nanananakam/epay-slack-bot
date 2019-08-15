@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/sclevine/agouti"
@@ -92,7 +93,7 @@ func BindSlackData(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("config setting:", cfg.WebhookUrl)
 	if postData.UserName == cfg.TargetUser {
-		SlackPost(cfg, epay())
+		SlackPost(cfg, epay(postData.Text))
 	} else {
 		SlackPost(cfg, "@"+postData.UserName+" お前は誰だ")
 	}
@@ -106,7 +107,7 @@ func main() {
 	http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 }
 
-func epay() string {
+func epay(input string) string {
 	var result string
 	driver := agouti.ChromeDriver(agouti.ChromeOptions("args", []string{
 		"--headless",
@@ -218,33 +219,8 @@ func epay() string {
 
 	now := time.Now()
 
-	fromValue, err := page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Attribute("value")
-	if err != nil {
-		html, err2 := page.HTML()
-		if err2 != nil {
-			log.Println(err2)
-		} else {
-			log.Println(html)
-		}
-		driver.Stop()
-		log.Println(err)
-		return err.Error()
-	}
-
-	mmss := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
-	if err != nil {
-		html, err2 := page.HTML()
-		if err2 != nil {
-			log.Println(err2)
-		} else {
-			log.Println(html)
-		}
-		driver.Stop()
-		log.Println(err)
-		return err.Error()
-	}
-	if fromValue == "" {
-		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Fill(mmss)
+	if strings.Contains(input, "休日") {
+		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"checkbox\"]").At(0).Check()
 		if err != nil {
 			html, err2 := page.HTML()
 			if err2 != nil {
@@ -256,9 +232,83 @@ func epay() string {
 			log.Println(err)
 			return err.Error()
 		}
-		result = "出勤打刻 " + mmss
+		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Fill("")
+		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
+			driver.Stop()
+			log.Println(err)
+			return err.Error()
+		}
+		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(1).Fill("")
+		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
+			driver.Stop()
+			log.Println(err)
+			return err.Error()
+		}
+		result = "休日打刻"
+	} else if strings.Contains(input, "有給") {
+		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"checkbox\"]").At(0).Check()
+		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
+			driver.Stop()
+			log.Println(err)
+			return err.Error()
+		}
+		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Fill("")
+		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
+			driver.Stop()
+			log.Println(err)
+			return err.Error()
+		}
+		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(1).Fill("")
+		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
+			driver.Stop()
+			log.Println(err)
+			return err.Error()
+		}
+		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("select").At(0).All("option[value=\"2000\"]").Click()
+		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
+			driver.Stop()
+			log.Println(err)
+			return err.Error()
+		}
+		result = "有給打刻"
 	} else {
-		err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(1).Fill(mmss)
+		fromValue, err := page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Attribute("value")
 		if err != nil {
 			html, err2 := page.HTML()
 			if err2 != nil {
@@ -270,7 +320,60 @@ func epay() string {
 			log.Println(err)
 			return err.Error()
 		}
-		result = "退勤打刻 " + mmss
+
+		mmss := fmt.Sprintf("%02d%02d", now.Hour(), now.Minute())
+		if err != nil {
+			html, err2 := page.HTML()
+			if err2 != nil {
+				log.Println(err2)
+			} else {
+				log.Println(html)
+			}
+			driver.Stop()
+			log.Println(err)
+			return err.Error()
+		}
+		if fromValue == "" {
+			err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(0).Fill(mmss)
+			if err != nil {
+				html, err2 := page.HTML()
+				if err2 != nil {
+					log.Println(err2)
+				} else {
+					log.Println(html)
+				}
+				driver.Stop()
+				log.Println(err)
+				return err.Error()
+			}
+			result = "出勤打刻 " + mmss
+		} else {
+			err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"checkbox\"]").At(0).Check()
+			if err != nil {
+				html, err2 := page.HTML()
+				if err2 != nil {
+					log.Println(err2)
+				} else {
+					log.Println(html)
+				}
+				driver.Stop()
+				log.Println(err)
+				return err.Error()
+			}
+			err = page.All(".work-control.work-calendar").At(now.Day() - 1).All("input[type=\"text\"]").At(1).Fill(mmss)
+			if err != nil {
+				html, err2 := page.HTML()
+				if err2 != nil {
+					log.Println(err2)
+				} else {
+					log.Println(html)
+				}
+				driver.Stop()
+				log.Println(err)
+				return err.Error()
+			}
+			result = "退勤打刻 " + mmss
+		}
 	}
 
 	err = page.Find("#contentsRight > div.wrapperCenter.mt10 > a.buttonLBright.lastchild").Click()
